@@ -4,11 +4,20 @@ import OrderItem from "./OrderItem";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
-  const { user } = useContext(AuthContext);
+  const { user, logout} = useContext(AuthContext);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/orders?email=${user?.email}`)
-      .then((res) => res.json())
+    fetch(`http://localhost:5000/orders?email=${user?.email}`, {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+      .then((res) => {
+        if(res.status === 401 || res.status === 403){
+          return logout();
+        }
+        return res.json();
+      })
       .then((data) => setOrders(data));
   }, [user?.email]);
 

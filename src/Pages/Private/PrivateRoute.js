@@ -10,11 +10,11 @@ const PrivateRoute = ({children}) => {
         return <h1 className='text-center my-60 text-2xl'>Loading......</h1>
     }
 
-    if(user){
+    if(user || user?.email){
         return children
     }
 
-    return <Navigate to="/login" state={{from: location}} replace></Navigate>
+    return <Navigate to="/login" state={{ from: location }} replace></Navigate>
 };
 
 export default PrivateRoute;

@@ -8,23 +8,38 @@ const Login = () => {
     const location = useLocation();
     const {login} = useContext(AuthContext);
 
-    const from = location.state.from.pathname || '/';
+    const from = location?.state?.from?.pathname || '/';
 
     const handleEmailPassword = (event) => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        // console.log(email, password);
+
 
         login(email, password)
         .then(result => {
             const user = result.user;
             form.reset();
-            navigate(from, {replace: true})
-            console.log(user);
+            const currentUser = {
+              email: user.email
+            }
+            fetch('http://localhost:5000/jwt', {
+              method: 'POST',
+              headers: {
+                'content-type' : 'application/json',
+              },
+              body: JSON.stringify(currentUser)
+            })
+            .then(res => res.json())
+            .then(data => {
+              // console.log(data.token);
+              localStorage.setItem('token', data.token);
+              navigate(from, {replace: true});
+            })
+            // console.log(user);
         })
-        .then(error => console.log(error));
+        .catch(error => console.log(error));
     }
 
   return (
